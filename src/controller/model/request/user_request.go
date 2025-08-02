@@ -1,9 +1,8 @@
 package request
 
 type UserRequest struct {
-	ID       string `json:"id,omitempty"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6,max=20"`
-	Name     string `json:"name" binding:"required,min=3,max=50"`
-	Age      string `json:"name" binding:"required,min=3,max=50"`
+	Email    string `json:"email"`
+	Password string `json:"password" `
+	Name     string `json:"name"`
+	Age      int    `json:"age"` // Changed to string to match the response type
 }
