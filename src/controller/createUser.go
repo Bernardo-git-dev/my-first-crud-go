@@ -6,12 +6,14 @@ import (
 	"github.com/Bernardo-git-dev/my-first-crud-go/src/configuration/logger"
 	"github.com/Bernardo-git-dev/my-first-crud-go/src/configuration/validation"
 	"github.com/Bernardo-git-dev/my-first-crud-go/src/controller/model/request"
-	"github.com/Bernardo-git-dev/my-first-crud-go/src/controller/model/response"
+	"github.com/Bernardo-git-dev/my-first-crud-go/src/model"
+	"github.com/Bernardo-git-dev/my-first-crud-go/src/model/service"
+	"github.com/Bernardo-git-dev/my-first-crud-go/src/view"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-func CreateUser(c *gin.Context) {
+func (uc *userControllerInterface) CreateUser(c *gin.Context) {
 	logger.Info("Init CreateUser controller",
 		zap.String("jurney", "CreateUser"),
 	)
@@ -26,15 +28,21 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	response := response.UserResponse{
-		ID:    "test",
-		Email: userRequest.Email,
-		Name:  userRequest.Name,
-		Age:   userRequest.Age,
+	domain := model.NewUserDomain(
+		userRequest.Email,
+		userRequest.Password,
+		userRequest.Name,
+		userRequest.Age,
+	)
+
+	service := service.NewUserDomainService()
+	if err := service.CreateUser(domain); err != nil {
+		c.JSON(err.Code, err)
+		return
 	}
+
 	logger.Info("User created successfully",
 		zap.String("jurney", "CreateUser"),
 	)
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, view.ConvertDomainToResponse(domain))
 }
